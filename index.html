@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>机嵌创研社 - 嵌入梦想，控制未来</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #050810;
+    color: #e0e6ed;
+    overflow-x: hidden;
+  }
+
+  /* Particle Canvas */
+  #particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(5, 8, 16, 0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 18px;
+    color: #00d4ff;
+    text-decoration: none;
+  }
+  .nav-logo-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00d4ff, #0066ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: #8a9bb0;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: #00d4ff; }
+  .nav-cta {
+    background: linear-gradient(135deg, #00d4ff, #0066ff);
+    color: #fff !important;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 1;
+    padding: 0 20px;
+  }
+  .hero-title {
+    font-size: clamp(48px, 10vw, 96px);
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 60px rgba(0, 212, 255, 0.6), 0 0 120px rgba(0, 102, 255, 0.3);
+    animation: glowPulse 3s ease-in-out infinite;
+    letter-spacing: 8px;
+  }
+  @keyframes glowPulse {
+    0%, 100% { text-shadow: 0 0 60px rgba(0, 212, 255, 0.6), 0 0 120px rgba(0, 102, 255, 0.3); }
+    50% { text-shadow: 0 0 80px rgba(0, 212, 255, 0.9), 0 0 160px rgba(0, 102, 255, 0.5); }
+  }
+  .hero-sub {
+    font-size: clamp(16px, 3vw, 24px);
+    color: #00d4ff;
+    letter-spacing: 12px;
+    margin-top: 16px;
+    opacity: 0.8;
+  }
+  .hero-slogan {
+    font-size: clamp(14px, 2vw, 20px);
+    color: #6a7d8e;
+    margin-top: 24px;
+    letter-spacing: 4px;
+  }
+  .hero-btn {
+    margin-top: 48px;
+    padding: 16px 48px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #050810;
+    background: linear-gradient(135deg, #00d4ff, #0066ff);
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .hero-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
+  }
+  .hero-btn::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 42px;
+    background: linear-gradient(135deg, #00d4ff, #ff6600);
+    z-index: -1;
+    animation: btnRotate 3s linear infinite;
+  }
+  @keyframes btnRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Sections */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 100px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+  .section-title span { color: #00d4ff; }
+  .section-sub {
+    font-size: 16px;
+    color: #6a7d8e;
+    margin-bottom: 48px;
+    line-height: 1.8;
+  }
+
+  /* Glass Cards */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 20px;
+    padding: 40px;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(0, 102, 255, 0.15);
+    border-color: rgba(0, 212, 255, 0.4);
+  }
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .glass-card:hover::before { opacity: 1; }
+
+  /* Grid */
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+  }
+
+  /* Feature Cards */
+  .feature-card {
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .feature-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+  }
+  .feature-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  .feature-desc {
+    font-size: 14px;
+    color: #8a9bb0;
+    line-height: 1.7;
+  }
+
+  /* Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 32px;
+    margin-top: 48px;
+  }
+  .stat-item {
+    text-align: center;
+    padding: 32px;
+  }
+  .stat-num {
+    font-size: clamp(40px, 6vw, 64px);
+    font-weight: 900;
+    color: #00d4ff;
+    text-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
+  }
+  .stat-label {
+    font-size: 16px;
+    color: #6a7d8e;
+    margin-top: 8px;
+  }
+
+  /* Join Section */
+  .join-card {
+    text-align: center;
+    padding: 60px 40px;
+  }
+  .join-dates {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ff6600;
+    margin: 24px 0;
+    animation: blink 1.5s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .qr-placeholder {
+    width: 180px;
+    height: 180px;
+    border: 2px dashed rgba(0, 212, 255, 0.4);
+    border-radius: 16px;
+    margin: 24px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6a7d8e;
+    font-size: 14px;
+  }
+  .join-btn {
+    padding: 16px 48px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #050810;
+    background: linear-gradient(135deg, #ff6600, #ff3300);
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: inline-block;
+    text-decoration: none;
+  }
+  .join-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 40px rgba(255, 102, 0, 0.5);
+  }
+
+  /* Back to Top */
+  .back-top {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, #00d4ff, #0066ff);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 99;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+  }
+  .back-top.show { opacity: 1; }
+  .back-top:hover { transform: translateY(-4px); }
+
+  /* Footer */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid rgba(0, 212, 255, 0.1);
+    padding: 40px;
+    text-align: center;
+    color: #3a4d60;
+    font-size: 13px;
+  }
+
+  /* About Section */
+  .about-text {
+    font-size: 18px;
+    line-height: 2;
+    color: #c0cad6;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    nav { padding: 12px 20px; }
+    .nav-links { display: none; }
+    section { padding: 60px 20px; }
+    .glass-card { padding: 24px; }
+  }
+
+  /* Scroll animations */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Counter animation */
+  .counter { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">⚙</div>
+    机嵌创研社
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">关于我们</a></li>
+    <li><a href="#what">做什么</a></li>
+    <li><a href="#members">招募对象</a></li>
+    <li><a href="#join" class="nav-cta">立即加入</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-title">机嵌创研社</div>
+  <div class="hero-sub">EMBEDDED &amp; AUTOMATION</div>
+  <div class="hero-slogan">嵌入梦想 · 控制未来</div>
+  <a href="#join" class="hero-btn">立即加入</a>
+</div>
+
+<!-- About -->
+<section id="about" class="reveal">
+  <div class="section-title">关于<span>我们</span></div>
+  <div class="section-sub">从零开始，一起造物</div>
+  <div class="glass-card">
+    <p class="about-text">
+      机嵌创研社是由电气、自动化、机械等专业爱好者组成的硬核技术社团。<br>
+      我们立足专业，面向竞赛，专注嵌入式与智能控制领域。<br>
+      无论你是想点亮硬件技能树，还是为简历增添竞赛经历，这里都将成为你大学最硬核的技术根据地。
+    </p>
+  </div>
+</section>
+
+<!-- What We Do -->
+<section id="what" class="reveal">
+  <div class="section-title">我们<span>做什么</span></div>
+  <div class="section-sub">四大核心板块，全面覆盖</div>
+  <div class="grid-4">
+    <div class="glass-card feature-card">
+      <div class="feature-icon">🔧</div>
+      <div class="feature-title">技术培训</div>
+      <div class="feature-desc">STM32、Arduino、PLC控制、电路设计与PCB绘制、电机驱动等专题培训，零基础也能稳步上手。</div>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="feature-icon">🏆</div>
+      <div class="feature-title">竞赛实战</div>
+      <div class="feature-desc">全国大学生电子设计竞赛、西门子杯、智能车竞赛、蓝桥杯、挑战杯，学长和老师带队攻关。</div>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="feature-icon">🚀</div>
+      <div class="feature-title">项目开发</div>
+      <div class="feature-desc">工业数据采集、机器人控制、物联网小玩意儿，从原理图到实物，把想法变成现实。</div>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="feature-icon">💬</div>
+      <div class="feature-title">交流分享</div>
+      <div class="feature-desc">技术沙龙、学长经验谈、焊接工坊、开源项目复现，保证每个脑洞都有人接得住。</div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="reveal">
+  <div class="stats-grid">
+    <div class="glass-card stat-item">
+      <div class="stat-num counter" data-target="20">0</div>
+      <div class="stat-label">竞赛获奖项目</div>
+    </div>
+    <div class="glass-card stat-item">
+      <div class="stat-num counter" data-target="100">0</div>
+      <div class="stat-label">%动手实践</div>
+    </div>
+    <div class="glass-card stat-item">
+      <div class="stat-num counter" data-target="0">0</div>
+      <div class="stat-label">基础可来</div>
+    </div>
+    <div class="glass-card stat-item">
+      <div class="stat-num counter" data-target="50">0</div>
+      <div class="stat-label">+会员规模</div>
+    </div>
+  </div>
+</section>
+
+<!-- Members -->
+<section id="members" class="reveal">
+  <div class="section-title">寻找<span>这样的你</span></div>
+  <div class="section-sub">只要你对单片机、电路控制有一丝好奇，无论是大神还是小白，这里都欢迎你。</div>
+  <div class="glass-card">
+    <ul style="list-style:none; line-height:2.5; font-size:16px; color:#c0cad6;">
+      <li>✅ 自动化、电气、机械、电子、计算机等相关专业（不限年级）</li>
+      <li>✅ 对嵌入式、单片机、电路控制有一点点兴趣</li>
+      <li>✅ 愿意动手、乐于折腾，相信"造物"比"做题"更有趣</li>
+      <li>✅ 想参加科技类竞赛，让大学生活多一点谈资与成果</li>
+    </ul>
+  </div>
+</section>
+
+<!-- Join -->
+<section id="join" class="reveal">
+  <div class="glass-card join-card">
+    <div class="section-title">如何<span>加入</span></div>
+    <div class="join-dates">纳新时间：2025年9月 - 10月</div>
+    <div class="qr-placeholder">二维码图片<br>（替换此处）</div>
+    <p style="color:#6a7d8e; margin-bottom:24px;">扫描上方二维码加入纳新群</p>
+    <a href="#" class="join-btn">立即报名</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>© 2025 机嵌创研社 · Machine &amp; Embedded Innovation Society</p>
+  <p style="margin-top:8px;">让大学生活，多一点硬核</p>
+</footer>
+
+<!-- Back to Top -->
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// Particle animation
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let w, h, particles;
+
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+class Particle {
+  constructor() {
+    this.reset();
+  }
+  reset() {
+    this.x = Math.random() * w;
+    this.y = Math.random() * h;
+    this.size = Math.random() * 2 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.4;
+    this.speedY = (Math.random() - 0.5) * 0.4;
+    this.opacity = Math.random() * 0.5 + 0.1;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0, 212, 255, ${this.opacity})`;
+    ctx.fill();
+  }
+}
+
+const particleCount = Math.min(150, Math.floor((w * h) / 8000));
+particles = Array.from({ length: particleCount }, () => new Particle());
+
+function drawLines() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 120) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(0, 212, 255, ${0.08 * (1 - dist / 120)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, w, h);
+  particles.forEach(p => { p.update(); p.draw(); });
+  drawLines();
+  requestAnimationFrame(animate);
+}
+animate();
+
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('active');
+    }
+  });
+}, { threshold: 0.15 });
+reveals.forEach(el => observer.observe(el));
+
+// Back to top
+const backTop = document.getElementById('backTop');
+window.addEventListener('scroll', () => {
+  backTop.classList.toggle('show', window.scrollY > 500);
+});
+
+// Counter animation
+const counters = document.querySelectorAll('.counter[data-target]');
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const target = parseInt(entry.target.dataset.target);
+      const duration = 1500;
+      const start = performance.now();
+      function update(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        entry.target.textContent = Math.round(target * eased) + (target === 100 ? '%' : '+');
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+      counterObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+counters.forEach(c => counterObserver.observe(c));
+</script>
+</body>
+</html>
